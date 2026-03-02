@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Bulanga Secondary · fullscreen slideshow</title>
-  <!-- Font Awesome for icons (logo & controls) -->
+  <title>Bulanga Secondary School· fullscreen slideshow</title>
+  <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Google Font for clean modern look -->
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -20,10 +20,9 @@
       overflow: hidden;
       height: 100vh;
       width: 100vw;
-      background: #000; /* fallback while slides load */
+      background: #000;
     }
 
-    /* slideshow container – covers everything */
     .slideshow {
       position: fixed;
       top: 0;
@@ -52,25 +51,23 @@
       z-index: 1;
     }
 
-    /* dark overlay for better text readability */
     .overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.25); /* subtle dark layer */
+      background: rgba(0, 0, 0, 0.25);
       z-index: 2;
-      pointer-events: none; /* allows clicks to pass through to controls if needed */
+      pointer-events: none;
     }
 
-    /* ----- content that sits above slides ----- */
     .content {
       position: relative;
       z-index: 10;
       width: 100%;
       height: 100%;
-      pointer-events: none; /* let touches pass to music button if needed, but we make button clickable */
+      pointer-events: none;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -80,12 +77,10 @@
       text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
     }
 
-    /* make children that need interaction clickable */
     .content > * {
       pointer-events: auto;
     }
 
-    /* header line: logo right, name centered */
     .header-row {
       width: 100%;
       display: flex;
@@ -104,7 +99,7 @@
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255,255,255,0.2);
       text-align: center;
-      margin: 0 auto; /* centered in flex */
+      margin: 0 auto;
     }
 
     .logo {
@@ -122,7 +117,6 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
-    /* dynamic events container (bottom area) */
     .events-panel {
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
@@ -153,7 +147,6 @@
       transition: opacity 0.4s ease;
     }
 
-    /* bottom row with music control and subtle credit */
     .bottom-bar {
       width: 100%;
       display: flex;
@@ -161,15 +154,20 @@
       align-items: center;
     }
 
-    .music-btn {
+    .left-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .music-btn, .upload-btn {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.3);
       color: white;
       font-size: 2rem;
-      padding: 12px;
-      width: 65px;
-      height: 65px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -177,10 +175,15 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       transition: 0.2s;
-      pointer-events: auto;
     }
 
-    .music-btn:active {
+    .upload-btn {
+      font-size: 1.8rem;
+      width: 50px;
+      height: 50px;
+    }
+
+    .music-btn:active, .upload-btn:active {
       transform: scale(0.94);
       background: rgba(255,255,255,0.4);
     }
@@ -198,199 +201,11 @@
       color: gold;
     }
 
-    /* loading / fallback */
-    .slide {
-      background-color: #1a2a3a; /* fallback */
+    /* hidden file inputs */
+    .file-input {
+      display: none;
     }
 
-    /* make sure no scrollbars appear */
-    body {
-      overscroll-behavior: none;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- SLIDESHOW (background) -->
-  <div class="slideshow" id="slideshow">
-    <!-- slides will be injected via JS -->
-  </div>
-
-  <!-- semi-transparent overlay for extra readability -->
-  <div class="overlay"></div>
-
-  <!-- MAIN UI ON TOP -->
-  <div class="content">
-
-    <!-- top section: logo right, name centered -->
-    <div class="header-row">
-      <div></div> <!-- empty spacer to keep logo right & name centered -->
-      <div class="school-name">BULANGA SECONDARY</div>
-      <div class="logo"><i class="fas fa-graduation-cap"></i></div>
-    </div>
-
-    <!-- spacer to push events down naturally, but we use space-between on parent -->
-    <div style="flex:1;"></div>
-
-    <!-- dynamic events panel -->
-    <div class="events-panel">
-      <div class="events-label"><i class="far fa-calendar-alt"></i> UPCOMING</div>
-      <div id="dynamicEvent">Sports Day · Friday 10th</div>
-    </div>
-
-    <!-- bottom bar with music control and info -->
-    <div class="bottom-bar">
-      <div class="music-btn" id="musicToggle">
-        <i class="fas fa-play" id="musicIcon"></i>
-      </div>
-      <div class="footer-note">
-        <i class="fas fa-image"></i> BULANGA · live
-      </div>
-    </div>
-  </div>
-
-  <!-- hidden audio player (background music) -->
-  <audio id="bgMusic" loop preload="auto" crossorigin="anonymous">
-    <!-- royalty‑free / test track from SoundHelix -->
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <script>
-    (function() {
-      // ---------- SLIDESHOW CONFIG ----------
-      // High‑quality images from Picsum (all free to use)
-      const images = [
-        "https://picsum.photos/id/1015/1920/1080", // mountains
-        "https://picsum.photos/id/1043/1920/1080", // river
-        "https://picsum.photos/id/106/1920/1080",  // flower
-        "https://picsum.photos/id/104/1920/1080",  // water
-        "https://picsum.photos/id/146/1920/1080",  // owl
-        "https://picsum.photos/id/130/1920/1080"   // bus
-      ];
-
-      const slidesContainer = document.getElementById('slideshow');
-      let slideElements = [];
-      let currentIndex = 0;
-      let intervalId;
-
-      // Create slide divs
-      images.forEach((url, idx) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide' + (idx === 0 ? ' active' : '');
-        slide.style.backgroundImage = `url('${url}')`;
-        slidesContainer.appendChild(slide);
-        slideElements.push(slide);
-      });
-
-      // Function to switch to next slide
-      function nextSlide() {
-        slideElements[currentIndex].classList.remove('active');
-        currentIndex = (currentIndex + 1) % slideElements.length;
-        slideElements[currentIndex].classList.add('active');
-      }
-
-      // Start slideshow interval (change every 6 seconds)
-      intervalId = setInterval(nextSlide, 6000);
-
-      // ---------- DYNAMIC EVENTS ----------
-      const eventDisplay = document.getElementById('dynamicEvent');
-      const eventsList = [
-        "🏆 Sports Day · Friday 10th",
-        "📚 Parent-Teacher Meeting · March 15",
-        "🌴 Holiday · April 2",
-        "📝 Exams Start · May 5",
-        "🎭 Drama Festival · June 12",
-        "⚽ Inter-school Tournament · July 8"
-      ];
-      let eventIndex = 0;
-
-      function rotateEvent() {
-        eventIndex = (eventIndex + 1) % eventsList.length;
-        // fade effect
-        eventDisplay.style.opacity = '0';
-        setTimeout(() => {
-          eventDisplay.textContent = eventsList[eventIndex];
-          eventDisplay.style.opacity = '1';
-        }, 200);
-      }
-
-      // Rotate event every 5 seconds
-      setInterval(rotateEvent, 5000);
-
-      // ---------- BACKGROUND MUSIC (with autoplay attempt + toggle) ----------
-      const audio = document.getElementById('bgMusic');
-      const musicBtn = document.getElementById('musicToggle');
-      const musicIcon = document.getElementById('musicIcon');
-
-      // We'll try to autoplay (but mobile usually blocks). 
-      // If it fails, we show a play button. We'll start with muted = false? 
-      // Better: try to play. If error, show play icon. Also we set volume moderate.
-      audio.volume = 0.6;
-
-      function attemptAutoplay() {
-        audio.play().then(() => {
-          // succeeded
-          musicIcon.className = 'fas fa-pause';
-        }).catch(() => {
-          // autoplay blocked – keep icon as play
-          musicIcon.className = 'fas fa-play';
-        });
-      }
-
-      // Wait a bit before attempting (some browsers need user gesture but we try anyway)
-      setTimeout(attemptAutoplay, 1000);
-
-      // Toggle play/pause on button click
-      musicBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (audio.paused) {
-          audio.play().then(() => {
-            musicIcon.className = 'fas fa-pause';
-          }).catch(err => {
-            alert('Please tap again to enable music (browser restriction)');
-          });
-        } else {
-          audio.pause();
-          musicIcon.className = 'fas fa-play';
-        }
-      });
-
-      // When audio ends (shouldn't because loop), but just in case
-      audio.addEventListener('ended', () => {
-        musicIcon.className = 'fas fa-play';
-      });
-
-      // Optional: handle visibility change to pause? not needed.
-
-      // ---------- TOUCH / MOBILE SAFE (no extra gestures) ----------
-      // Prevent accidental zoom on double-tap (minimal)
-      document.addEventListener('touchstart', (e) => {
-        if (e.touches.length > 1) e.preventDefault(); // pinch zoom disable
-      }, { passive: false });
-
-      // Ensure that the content looks good and fullscreen
-      window.addEventListener('resize', () => {
-        // nothing needed, but keep aspect
-      });
-
-      // Preload next images? Not necessary, but we can gently warm up.
-      function preloadRemaining() {
-        for (let i = 1; i < images.length; i++) {
-          const img = new Image();
-          img.src = images[i];
-        }
-      }
-      preloadRemaining();
-
-      // small extra: update event text right away with first
-      eventDisplay.textContent = eventsList[0];
-    })();
-  </script>
-
-  <!-- tiny service worker / no needed, just ensure standalone feel -->
-  <style>
-    /* make the header consistent on very small screens */
     @media (max-width: 480px) {
       .logo {
         width: 55px;
@@ -412,10 +227,251 @@
         height: 55px;
         font-size: 1.7rem;
       }
+      .upload-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+      }
     }
   </style>
+</head>
+<body>
 
-  <!-- note: all images are from Picsum (free for any use, no attribution required) 
-       music from SoundHelix (free for testing/examples) -->
+  <div class="slideshow" id="slideshow"></div>
+  <div class="overlay"></div>
+
+  <div class="content">
+    <div class="header-row">
+      <div></div>
+      <div class="school-name">BULANGA SECONDARY school</div>
+      <div class="logo"><i class="fas fa-graduation-cap"></i></div>
+    </div>
+
+    <div style="flex:1;"></div>
+
+    <div class="events-panel">
+      <div class="events-label"><i class="far fa-calendar-alt"></i> UPCOMING</div>
+      <div id="dynamicEvent">Sports Day · Friday 10th</div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="left-controls">
+        <!-- music toggle (original) -->
+        <div class="music-btn" id="musicToggle">
+          <i class="fas fa-play" id="musicIcon"></i>
+        </div>
+        <!-- new upload buttons -->
+        <div class="upload-btn" id="uploadImagesBtn" title="Upload images (GIFs too)">
+          <i class="fas fa-images"></i>
+        </div>
+        <div class="upload-btn" id="uploadAudioBtn" title="Upload background music">
+          <i class="fas fa-music"></i>
+        </div>
+      </div>
+      <div class="footer-note">
+        <i class="fas fa-image"></i> BULANGA · live
+      </div>
+    </div>
+  </div>
+
+  <!-- hidden file inputs -->
+  <input type="file" id="imageUpload" class="file-input" accept="image/*" multiple>
+  <input type="file" id="audioUpload" class="file-input" accept="audio/*">
+
+  <!-- audio element (background music) -->
+  <audio id="bgMusic" loop preload="auto" crossorigin="anonymous">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    (function() {
+      // ---------- EXISTING SLIDESHOW CODE (preserved) ----------
+      const defaultImages = [
+        "https://picsum.photos/id/1015/1920/1080",
+        "https://picsum.photos/id/1043/1920/1080",
+        "https://picsum.photos/id/106/1920/1080",
+        "https://picsum.photos/id/104/1920/1080",
+        "https://picsum.photos/id/146/1920/1080",
+        "https://picsum.photos/id/130/1920/1080"
+      ];
+
+      const slidesContainer = document.getElementById('slideshow');
+      let slideElements = [];
+      let currentIndex = 0;
+      let intervalId;
+
+      // Helper to build slides from an array of image URLs
+      function buildSlidesFromUrls(urls) {
+        // Clear container
+        slidesContainer.innerHTML = '';
+        // Remove old object URLs (if any) – will be handled by caller
+        slideElements = [];
+        urls.forEach((url, idx) => {
+          const slide = document.createElement('div');
+          slide.className = 'slide' + (idx === 0 ? ' active' : '');
+          slide.style.backgroundImage = `url('${url}')`;
+          slidesContainer.appendChild(slide);
+          slideElements.push(slide);
+        });
+        currentIndex = 0;
+      }
+
+      // Initialize with default images
+      buildSlidesFromUrls(defaultImages);
+
+      // Slideshow interval
+      intervalId = setInterval(() => {
+        if (slideElements.length === 0) return;
+        slideElements[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % slideElements.length;
+        slideElements[currentIndex].classList.add('active');
+      }, 6000);
+
+      // ---------- DYNAMIC EVENTS (unchanged) ----------
+      const eventDisplay = document.getElementById('dynamicEvent');
+      const eventsList = [
+        "🏆 Sports Day · Friday 10th",
+        "📚 Parent-Teacher Meeting · March 15",
+        "🌴 Holiday · April 2",
+        "📝 Exams Start · May 5",
+        "🎭 Drama Festival · June 12",
+        "⚽ Inter-school Tournament · July 8"
+      ];
+      let eventIndex = 0;
+
+      function rotateEvent() {
+        eventIndex = (eventIndex + 1) % eventsList.length;
+        eventDisplay.style.opacity = '0';
+        setTimeout(() => {
+          eventDisplay.textContent = eventsList[eventIndex];
+          eventDisplay.style.opacity = '1';
+        }, 200);
+      }
+      setInterval(rotateEvent, 5000);
+      eventDisplay.textContent = eventsList[0];
+
+      // ---------- MUSIC CONTROL (unchanged but will work with uploaded files) ----------
+      const audio = document.getElementById('bgMusic');
+      const musicBtn = document.getElementById('musicToggle');
+      const musicIcon = document.getElementById('musicIcon');
+      audio.volume = 0.6;
+
+      function attemptAutoplay() {
+        audio.play().then(() => {
+          musicIcon.className = 'fas fa-pause';
+        }).catch(() => {
+          musicIcon.className = 'fas fa-play';
+        });
+      }
+      setTimeout(attemptAutoplay, 1000);
+
+      musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (audio.paused) {
+          audio.play().then(() => {
+            musicIcon.className = 'fas fa-pause';
+          }).catch(() => {
+            alert('Please tap again to enable music (browser restriction)');
+          });
+        } else {
+          audio.pause();
+          musicIcon.className = 'fas fa-play';
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        musicIcon.className = 'fas fa-play';
+      });
+
+      // ---------- NEW: UPLOAD FEATURES ----------
+      const imageUploadInput = document.getElementById('imageUpload');
+      const audioUploadInput = document.getElementById('audioUpload');
+      const uploadImagesBtn = document.getElementById('uploadImagesBtn');
+      const uploadAudioBtn = document.getElementById('uploadAudioBtn');
+
+      // Keep track of object URLs we create to revoke later
+      let currentObjectUrls = [];
+
+      // Revoke all previously created object URLs
+      function revokeObjectUrls() {
+        currentObjectUrls.forEach(url => URL.revokeObjectURL(url));
+        currentObjectUrls = [];
+      }
+
+      // Handle image upload
+      uploadImagesBtn.addEventListener('click', () => {
+        imageUploadInput.click();
+      });
+
+      imageUploadInput.addEventListener('change', (event) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+
+        // Revoke previous custom image URLs (but keep default ones untouched)
+        revokeObjectUrls();
+
+        // Create object URLs for new images
+        const newUrls = files.map(file => URL.createObjectURL(file));
+        currentObjectUrls = newUrls; // store for later cleanup
+
+        // Rebuild slides with new URLs (they replace defaults)
+        buildSlidesFromUrls(newUrls);
+
+        // Reset file input so selecting same files again triggers change
+        imageUploadInput.value = '';
+      });
+
+      // Handle audio upload
+      uploadAudioBtn.addEventListener('click', () => {
+        audioUploadInput.click();
+      });
+
+      audioUploadInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Revoke previous audio object URL if any
+        if (audio.src && audio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(audio.src);
+        }
+
+        // Create new object URL for audio
+        const audioUrl = URL.createObjectURL(file);
+        audio.src = audioUrl;
+        audio.load();
+
+        // Attempt to play (if user already toggled, maintain state)
+        if (musicIcon.className.includes('fa-pause')) {
+          audio.play().catch(() => {}); // silent fail, button will handle
+        }
+
+        // Store for later revocation (optional, but we can keep in a separate var)
+        // We'll just revoke when a new one is uploaded.
+        audioUploadInput.value = '';
+      });
+
+      // Preload default images for smoother experience (optional)
+      defaultImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+
+      // Prevent pinch zoom (already there)
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) e.preventDefault();
+      }, { passive: false });
+
+    })();
+  </script>
 </body>
-  </html>
+</html>
+      
+      
+    
+    
+
+    
+
+
+
+      
